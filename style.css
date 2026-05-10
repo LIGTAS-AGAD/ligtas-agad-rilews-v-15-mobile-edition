@@ -100,7 +100,7 @@ body {
 #map {
     flex-grow: 1;                /* Take up available space */
     width: 100%;                 /* Full width */
-    height: 700px;               /* Set explicit height */
+    height: 650px;               /* Set explicit height */
     z-index: 1;                  /* Position on z-axis */
 }/* =========================================
    4. UI MODALS (Properties & Controls)
