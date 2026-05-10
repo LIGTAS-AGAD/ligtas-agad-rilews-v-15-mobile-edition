@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>LIGTAS-AGAD RILEWS v 15 Mobile Edition</title>
+    <link rel="stylesheet" href="./style.css">
+
+  </head>
+    
+  <body>
+  <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LIGTAS-AGAD RILEWS v 14 Advanced mode</title>
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.79.0/dist/L.Control.Locate.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-search@3.0.2/dist/leaflet-search.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
+    
+    <link rel="stylesheet" href="./style.css">
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.79.0/dist/L.Control.Locate.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet-search@3.0.2/dist/leaflet-search.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+</head>
+<body>
+    <div id="splash-screen">
+        <div class="splash-content">
+            <div class="splash-logos">
+                <img src="https://ligtas.uplb.edu.ph/wp-content/uploads/2022/04/3-e1659971771933.png" alt="LIGTAS Logo">
+            </div>
+            <h1>LIGTAS-AGAD RILEWS</h1>
+            <p>Rain-Induced Landslide Early Warning System</p>
+            <div class="splash-spinner"></div>
+            <h3 id="splash-message">Initializing System & Loading Map Data...</h3>
+        </div>
+    </div>
+
+    <div id="errorOverride"><span id="errorMessage"></span></div>
+
+    <div id="header2">
+        <div class="header-left">
+            <img src="https://ligtas.uplb.edu.ph/wp-content/uploads/2022/04/3-e1659971771933.png" alt="LIGTAS Logo" class="header-logo">
+            <div class="header-title">LIGTAS-AGAD_RILEWSV4 | Rain-Induced Landslide Early Warning System</div>
+        </div>
+        <span id="real-time" class="desktop-clock"></span>
+        <button class="hamburger-btn" id="hamburgerBtn">☰</button>
+    </div>
+
+    <div id="subheader" class="header-controls">
+        <span id="real-time-mobile" class="mobile-clock"></span>
+        
+        <div class="button-group">
+            <button class="nav-btn" onclick="Homebutton()">🏠 Home</button>
+            <button class="nav-btn" onclick="window.open('YOUR_DETECT_URL_HERE', '_blank')">🔍 Detect</button>
+            <button class="nav-btn" onclick="window.open('YOUR_ABOUT_URL_HERE', '_blank')">ℹ️ About</button>
+        </div>
+
+        <div class="button-group">
+            <button class="nav-btn btn-warning" id="assessLocationBtn">📍 Assess Current Location</button>
+            <button class="nav-btn" id="toggleEffectsBtn">✨ layer Effects</button>
+        </div>
+
+        <div class="button-group">
+            <button class="nav-btn btn-danger" id="toggle-buffer">⭕ AWS Warning</button>
+            <button class="nav-btn" onclick="AWSbutton()">📊 Landslide Warning Advisories</button>
+        </div>
+
+        <div class="button-group">
+            <button class="nav-btn" id="openControlsBtn">⚙️ Layer Controls</button>
+            <button class="nav-btn" id="openPropertiesBtn">📋 Properties</button>
+        </div>
+    </div>
+
+    <div id="map"></div>
+
+    <div id="controlsModal" class="ui-modal">
+        <div class="ui-modal-content">
+            <span class="close-ui-modal" id="closeControlsBtn">&times;</span>
+            <h3>⚙️ Map Controls & Forecast</h3>
+            <div class="panel-content">
+                <h4>Global Layers</h4>
+                <div class="layer-actions">
+                    <button id="loadAllLayersBtn">Load All</button>
+                    <button id="unloadAllLayersBtn">Unload All</button>
+                    <button id="defaultLayersBtn">Default</button>
+                </div>
+                <div id="layerControls"></div>
+                <hr style="margin: 15px 0; border: 0; border-top: 1px solid #ddd;">
+                <h4>Raster Forecast</h4>
+                <div class="forecast-controls">
+                    <div id="currentGroup">Day: 1</div>
+                    <div class="btn-group">
+                        <button id="prevBtn">⏪</button>
+                        <button id="playBtn">▶️ Play</button>
+                        <button id="pauseBtn">⏸️</button>
+                        <button id="stopBtn">⏹️</button>
+                        <button id="nextBtn">⏩</button>
+                    </div>
+                    <div class="slider-container">
+                        <label>Speed: <span id="speedValue">5s</span></label>
+                        <input type="range" id="speedSlider" min="1" max="10" value="5">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="propertiesModal" class="ui-modal">
+        <div class="ui-modal-content" style="max-width: 500px;">
+            <span class="close-ui-modal" id="closePropertiesBtn">&times;</span>
+            <h3>📋 Feature Properties</h3>
+            <div class="panel-content">
+                <table id="propertiesTable">
+                    <thead>
+                        <tr>
+                            <th>Layer</th>
+                            <th>Property</th>
+                            <th>Value</th>
+                        </tr>
+                    </thead>
+                    <tbody id="propertiesTableBody">
+                        <tr><td colspan="3" style="text-align:center; padding:20px; color:#666;">Click on a map feature to view details here.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="imageModal" class="image-modal" onclick="this.style.display='none'">
+        <span class="close-modal">&times;</span>
+        <img class="modal-content" id="img01">
+        <div id="caption"></div>
+    </div>
+
+    <script src="./script.js"></script>
+</body>
+</html>
+    <script  src="./script.js"></script>
+
+  </body>
+  
+</html>
