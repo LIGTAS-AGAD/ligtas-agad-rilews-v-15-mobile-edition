@@ -256,7 +256,6 @@ body.disable-effects .flashing-high { animation: none !important; opacity: 0.8 !
 
 @media (max-width: 720px) {
      .container {
-  width: 90%; /* Occupies 90% of the width on mobile */
   max-width: 720px; /* Limits the width on larger screens */
   margin: 0 auto; /* Centers the container */
 }
