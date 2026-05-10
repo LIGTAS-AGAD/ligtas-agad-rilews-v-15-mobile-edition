@@ -251,10 +251,10 @@ body.disable-effects .flashing-high { animation: none !important; opacity: 0.8 !
 .mobile-clock { display: none !important; }
 .hamburger-btn { display: none !important; background: none; border: none; color: white; font-size: 1.8rem; cursor: pointer; padding: 0 5px; transition: transform 0.2s; }
 
-@media (max-width: 730px) {
+@media (max-width: 720px) {
      .container {
   width: 90%; /* Occupies 90% of the width on mobile */
-  max-width: 730px; /* Limits the width on larger screens */
+  max-width: 720px; /* Limits the width on larger screens */
   margin: 0 auto; /* Centers the container */
 }
     #header2 { padding: 0 15px; }
