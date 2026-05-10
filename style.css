@@ -97,9 +97,12 @@ body {
 /* =========================================
    3. MAP AREA
    ========================================= */
-#map {width: 90%; }
-
-/* =========================================
+#map {
+    flex-grow: 1;                /* Take up available space */
+    width: 100%;                 /* Full width */
+    height: 730px;               /* Set explicit height */
+    z-index: 1;                  /* Position on z-axis */
+}/* =========================================
    4. UI MODALS (Properties & Controls)
    ========================================= */
 .ui-modal {
