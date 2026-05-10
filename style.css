@@ -252,6 +252,7 @@ body.disable-effects .flashing-high { animation: none !important; opacity: 0.8 !
 .hamburger-btn { display: none !important; background: none; border: none; color: white; font-size: 1.8rem; cursor: pointer; padding: 0 5px; transition: transform 0.2s; }
 
 @media (max-width: 740px) {
+     .container {width: 90%;}
     #header2 { padding: 0 15px; }
     .header-left { flex-grow: 1; overflow: hidden; } 
     .header-title { font-size: 1.05rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
