@@ -251,7 +251,7 @@ body.disable-effects .flashing-high { animation: none !important; opacity: 0.8 !
 .mobile-clock { display: none !important; }
 .hamburger-btn { display: none !important; background: none; border: none; color: white; font-size: 1.8rem; cursor: pointer; padding: 0 5px; transition: transform 0.2s; }
 
-@media (max-width: 740px) {
+@media (max-width: 730px) {
      .container {width: 90%;}
     #header2 { padding: 0 15px; }
     .header-left { flex-grow: 1; overflow: hidden; } 
