@@ -28,7 +28,7 @@ body {
 }
 
 /* =========================================
-   2. HEADER, SUBHEADER & BUTTON GROUPS
+   2. HEADER, SUBHEADER & BUTTON PODS
    ========================================= */
 #header2 {
     flex-shrink: 0; 
@@ -53,57 +53,89 @@ body {
 }
 
 #subheader {
-    flex-shrink: 0; background-color: #2a4c54; padding: 8px 20px;
-    display: flex; align-items: center; gap: 15px; box-shadow: 0 3px 8px rgba(0,0,0,0.2); z-index: 1999;
-    flex-wrap: nowrap; overflow-x: auto; 
+    flex-shrink: 0; 
+    background-color: #2a4c54; 
+    padding: 10px 20px;
+    display: flex; 
+    align-items: flex-end; 
+    gap: 20px; 
+    box-shadow: 0 3px 8px rgba(0,0,0,0.2); 
+    z-index: 1999;
+    overflow-x: auto;
+    white-space: nowrap;
 }
 
 #subheader::-webkit-scrollbar { display: none; }
 #subheader { -ms-overflow-style: none; scrollbar-width: none; }
 
-/* SEGMENTED BUTTON GROUPS */
-.button-group {
+.button-group-container {
     display: flex;
-    align-items: center;
-    border-radius: 20px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-    overflow: hidden;
-    flex-shrink: 0;
-    border: 1px solid rgba(255,255,255,0.1);
+    flex-direction: column;
+    gap: 4px;
 }
 
-.button-group .nav-btn {
-    background-color: #ffffff; color: var(--dark-teal); 
-    border: none; border-right: 1px solid rgba(0, 0, 0, 0.15);
-    padding: 7px 14px; border-radius: 0; font-size: 0.85rem; font-weight: bold;
-    cursor: pointer; transition: all 0.2s; outline: none;
-    white-space: nowrap; margin: 0; box-shadow: none;
+.group-label {
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: rgba(255, 255, 255, 0.6);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding-left: 2px;
 }
 
-.button-group .nav-btn:last-child { border-right: none; }
-.button-group .nav-btn:focus-visible { outline: 2px solid var(--secondary-color); outline-offset: -2px; z-index: 10; position: relative; }
-.button-group .nav-btn:hover { background-color: #e8f4f4; }
-.button-group .nav-btn:active { background-color: #d0e8e8; }
+.button-pod {
+    display: flex;
+    gap: 6px; 
+    background: rgba(255, 255, 255, 0.05);
+    padding: 4px;
+    border-radius: 25px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
 
-/* Color overrides for grouped buttons */
-.button-group .btn-danger { background-color: #e74c3c !important; color: white !important; border-right-color: rgba(0,0,0,0.2) !important; }
-.button-group .btn-danger:hover { background-color: #c0392b !important; }
-.button-group .btn-warning { background-color: #FFA500 !important; color: white !important; border-right-color: rgba(0,0,0,0.2) !important;}
-.button-group .btn-warning:hover { background-color: #e69500 !important; }
-.button-group .btn-success { background-color: #2ecc71 !important; color: white !important; border-right-color: rgba(0,0,0,0.2) !important;}
-.button-group .btn-success:hover { background-color: #27ae60 !important; }
-.button-group .btn-active { background-color: #c0392b !important; box-shadow: inset 0 3px 6px rgba(0,0,0,0.4) !important; }
+.nav-btn {
+    background-color: #ffffff; 
+    color: var(--dark-teal); 
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    padding: 6px 14px; 
+    border-radius: 20px; 
+    font-size: 0.85rem; 
+    font-weight: bold;
+    cursor: pointer; 
+    transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+    outline: none;
+    white-space: nowrap;
+}
+
+.nav-btn:hover {
+    background-color: #f0f8f8;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.btn-danger { background-color: #e74c3c !important; color: white !important; border: 1px solid #c0392b !important; }
+.btn-warning { background-color: #FFA500 !important; color: white !important; border: 1px solid #e69500 !important; }
+.btn-success { background-color: #2ecc71 !important; color: white !important; border: 1px solid #27ae60 !important; }
+.btn-active { background-color: #c0392b !important; box-shadow: inset 0 3px 6px rgba(0,0,0,0.4) !important; transform: translateY(1px); }
 
 /* =========================================
-   3. MAP AREA
+   3. MAP AREA & SCROLLABLE CONTAINER
    ========================================= */
+.map-panel-container {
+    flex-grow: 1;
+    width: 100%;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
 #map {
-    flex-grow: 1;                /* Take up available space */
-    width: 100%;                 /* Full width */
-    height: 650px;               /* Set explicit height */
-    z-index: 1;                  /* Position on z-axis */
-}/* =========================================
-   4. UI MODALS (Properties & Controls)
+    width: 100%;
+    flex-grow: 1;
+    z-index: 1;
+}
+
+/* =========================================
+   4. UI MODALS (Properties, Controls, Legend)
    ========================================= */
 .ui-modal {
     display: none; position: fixed; z-index: 3000; left: 0; top: 0; width: 100%; height: 100%; 
@@ -136,6 +168,14 @@ body {
 .slider-container { display: flex; flex-direction: column; gap: 5px; font-size: 0.9rem; font-weight: bold; }
 #speedSlider { width: 100%; }
 
+/* Modal Legend Styles */
+.legend-item { display: flex; align-items: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #eee; }
+.legend-logo { width: 24px; height: 24px; margin-right: 12px; object-fit: contain; }
+.legend-swatch { width: 20px; height: 20px; border: 1px solid #999; border-radius: 4px; margin-right: 12px; flex-shrink: 0; }
+.legend-text { font-size: 0.95rem; }
+.legend-text strong { display: block; color: #222; }
+.legend-text span { font-size: 0.8rem; color: #666; }
+
 /* =========================================
    5. CUSTOM POPUPS, CREDITS & SHARE BUTTON
    ========================================= */
@@ -160,31 +200,37 @@ body {
 .share-btn:hover { background-color: #2d4373; }
 
 /* =========================================
-   6. LEAFLET CONTROLS & LEGEND
+   6. LEAFLET CONTROLS
    ========================================= */
 .leaflet-control { background: rgba(255, 255, 255, 0.85) !important; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.5) !important; border-radius: 8px !important; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15) !important; color: #333 !important; }
-.leaflet-control-layers, .info, .legend { padding: 8px 12px !important; font-size: 13px !important; line-height: 1.4 !important; }
+.leaflet-control-layers, .info { padding: 8px 12px !important; font-size: 13px !important; line-height: 1.4 !important; }
 .leaflet-control-layers label { margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
-
-.legend { max-width: 180px; }
-.legend-toggle { width: 100%; background: none; border: none; font-weight: bold; text-align: left; cursor: pointer; color: var(--dark-teal); padding-bottom: 5px; }
-.legend-content.hidden { display: none; }
-.legend-content { max-height: 200px; overflow-y: auto; padding-right: 6px; scrollbar-width: thin; scrollbar-color: var(--primary-color) #f4f4f4; }
-.legend-content::-webkit-scrollbar { width: 6px; }
-.legend-content::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
-.legend-content::-webkit-scrollbar-thumb { background: var(--primary-color); border-radius: 4px; }
-.legend-item { display: flex; align-items: center; margin-bottom: 8px; }
-.legend-logo { width: 18px; height: 18px; margin-right: 8px; object-fit: contain; }
-.legend-swatch { width: 16px; height: 16px; border: 1px solid #999; border-radius: 3px; margin-right: 8px; flex-shrink: 0; }
-.legend-text strong { display: block; color: #222; }
-.legend-text span { font-size: 0.75rem; color: #666; }
 .leaflet-control-custom { display: flex; justify-content: center; align-items: center; transition: background-color 0.2s; }
 .leaflet-control-custom:hover { background-color: #f4f4f4 !important; }
+/* Custom GPS Image Button */
+.gps-image-btn {
+    background-color: white !important;
+    width: 30px !important;
+    height: 30px !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    border-radius: 4px; /* Matches default Leaflet rounding */
+}
+.gps-image-btn img {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    transition: transform 0.2s;
+}
+.gps-image-btn:hover img {
+    transform: scale(1.1); /* Slight zoom effect when hovered */
+}
 
 /* =========================================
    7. ANIMATIONS, SPLASH SCREEN & MODALS
    ========================================= */
-
 #splash-screen {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background: linear-gradient(135deg, var(--dark-teal), var(--light-teal));
@@ -203,14 +249,10 @@ body {
 }
 #splash-message { font-weight: bold; font-size: 1.1rem; color: #FFD700; letter-spacing: 0.5px; }
 
-/* =========================================
-   🔴 OPTIMIZED HARDWARE-ACCELERATED EFFECTS
-   ========================================= */
-
-/* PULSATING EXPANDING BUFFER RINGS */
+/* 🔴 OPTIMIZED HARDWARE-ACCELERATED EFFECTS */
 @keyframes pulse-expand { 
-    0% { transform: scale(0.5); opacity: 1.5; }
-    100% { transform: scale(1.1); opacity: 0; }
+    0% { transform: scale(0.8); opacity: 0.8; } 
+    100% { transform: scale(2.0); opacity: 0; } 
 }
 .pulse-layer { 
     transform-box: fill-box; 
@@ -220,7 +262,6 @@ body {
     will-change: transform, opacity; 
 }
 
-/* FLASHING EFFECT */
 @keyframes flash { 
     0% { opacity: 1; } 
     50% { opacity: 0.2; } 
@@ -254,10 +295,7 @@ body.disable-effects .flashing-high { animation: none !important; opacity: 0.8 !
 .mobile-clock { display: none !important; }
 .hamburger-btn { display: none !important; background: none; border: none; color: white; font-size: 1.8rem; cursor: pointer; padding: 0 5px; transition: transform 0.2s; }
 
-@media (max-width: 650px) {
-     .container {
-  margin: 0 auto; /* Centers the container */
-}
+@media (max-width: 768px) {
     #header2 { padding: 0 15px; }
     .header-left { flex-grow: 1; overflow: hidden; } 
     .header-title { font-size: 1.05rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -265,30 +303,154 @@ body.disable-effects .flashing-high { animation: none !important; opacity: 0.8 !
     .hamburger-btn { display: block !important; }
     .mobile-clock { display: block !important; text-align: center; color: #FFD700; font-size: 1.05rem; font-weight: bold; padding-bottom: 12px; border-bottom: 1px solid rgba(255, 255, 255, 0.3); margin-bottom: 10px; }
 
+    /* HAMBURGER MENU OVERRIDES WITH SCROLLBAR FIX */
     #subheader {
-        display: none !important; flex-direction: column; position: absolute; top: 50px; left: 0; width: 100%;
+        display: none !important; 
+        flex-direction: column; 
+        position: absolute; 
+        top: 50px; left: 0; width: 100%;
         background: linear-gradient(135deg, rgba(26, 59, 66, 0.98), rgba(38, 129, 113, 0.98));
-        padding: 15px 20px; box-shadow: 0 8px 15px rgba(0,0,0,0.3); z-index: 9999 !important; gap: 12px;
+        padding: 20px; 
+        padding-bottom: 80px; 
+        height: auto;
+        max-height: calc(100vh - 50px);
+        overflow-y: auto; 
+        overflow-x: hidden;
+        align-items: flex-start;
+        gap: 25px;
+        z-index: 9999 !important;
     }
     #subheader.show-menu { display: flex !important; animation: slideDown 0.2s ease-out forwards; }
     
-    /* MOBILE GROUP OVERRIDES */
-    .button-group {
-        flex-direction: column; width: 100%; border-radius: 8px; border: none;
+    #subheader::-webkit-scrollbar {
+        display: block !important; 
+        width: 6px;
     }
-    .button-group .nav-btn {
-        width: 100%; padding: 14px; font-size: 1rem; text-align: center;
-        border-right: none; border-bottom: 1px solid rgba(0,0,0,0.1);
+    #subheader::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.05); 
     }
-    .button-group .nav-btn:last-child { border-bottom: none; }
+    #subheader::-webkit-scrollbar-thumb {
+        background: rgba(255, 215, 0, 0.6); 
+        border-radius: 10px;
+    }
+    
+    .button-group-container { width: 100%; }
+    
+    .group-label {
+        color: #FFD700;
+        font-size: 0.75rem;
+        margin-bottom: 5px;
+        border-bottom: 1px solid rgba(255, 215, 0, 0.3);
+        padding-bottom: 3px;
+    }
+
+    .button-pod {
+        flex-direction: column;
+        width: 100%;
+        background: none;
+        padding: 0;
+        border: none;
+        gap: 10px;
+    }
+
+    .nav-btn {
+        width: 100%;
+        padding: 12px;
+        text-align: center;
+        border-radius: 8px;
+    }
 
     #subheader:not(.show-menu), .header-controls:not(.show-menu) { display: none !important; height: 0 !important; min-height: 0 !important; padding: 0 !important; margin: 0 !important; border: none !important; overflow: hidden !important; }
-    #map-container, #map { margin-top: 0 !important; padding-top: 0 !important; }
-
-    .ui-modal-content { width: 95%; max-width: none; }
-    .legend-content { max-height: 120px !important; }
     
+    /* MOBILE MAP SCROLLING LOGIC */
+    .map-panel-container {
+        overflow-y: auto; 
+        overflow-x: hidden;
+        padding: 10px;
+        background-color: #f4f4f4;
+        height: calc(100vh - 50px); 
+    }
+
+    #map {
+        min-height: 600px; 
+        border-radius: 12px;
+        border: 1px solid #ddd;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        flex-grow: 0; 
+    }
+    .ui-modal-content { width: 95%; max-width: none; }
     .splash-content h1 { font-size: 1.5rem; }
     .splash-logos img { height: 80px; }
 }
 @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+/* Position the GPS button in the middle right */
+.leaflet-right .gps-image-btn {
+    position: absolute;
+    right: 10px; /* Distance from the right edge */
+    top: 50vh;   /* Move to 50% of the viewport height */
+    transform: translateY(-50%); /* Offset by half its own height to be perfectly centered */
+    margin-top: 0;
+    z-index: 1000;
+}
+
+/* Middle-Right Positioning */
+.leaflet-right .gps-image-btn {
+    position: absolute;
+    right: 10px; 
+    top: 50vh;   
+    transform: translateY(-50%); 
+    margin-top: 0;
+    z-index: 1000;
+}
+
+/* Branded styling for the LIGTAS-AGAD interface - TRANSPARENT & LARGE */
+.gps-image-btn {
+    position: relative; /* Essential for the close button to anchor to */
+    background-color: transparent !important; 
+    width: 200px !important;  
+    height: 200px !important; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: none !important; 
+    box-shadow: none !important; 
+}
+
+.gps-image-btn img {
+    width: 180px;  
+    height: 180px;
+    object-fit: contain;
+    cursor: pointer;
+    transition: transform 0.2s;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5)); 
+}
+
+.gps-image-btn img:hover {
+    transform: scale(1.1); 
+}
+
+/* NEW: The little Red Close Button */
+.gps-close-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 24px;
+    height: 24px;
+    background-color: #e74c3c; /* Red danger color */
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+    z-index: 10;
+    transition: all 0.2s;
+}
+
+.gps-close-btn:hover {
+    background-color: #c0392b;
+    transform: scale(1.2); /* Bounces slightly when hovered */
+}
