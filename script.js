@@ -201,9 +201,65 @@ try {
         });
         map.addControl(drawControl);
 
-        map.on(L.Draw.Event.CREATED, function (event) {
+map.on(L.Draw.Event.CREATED, function (event) {
             const layer = event.layer;
-            drawnItems.addLayer(layer);
+            const type = event.layerType;
+
+            // If the user drew a marker, grab coordinates and fetch elevation
+            if (type === 'marker') {
+                const latlng = layer.getLatLng();
+                const lat = latlng.lat.toFixed(5);
+                const lng = latlng.lng.toFixed(5);
+                
+                // 1. Show the popup immediately with a "Fetching" loading state
+                const initialPopup = `
+                    <div style="text-align:center; font-family:inherit; min-width: 160px;">
+                        <strong style="color:var(--primary-color); font-size:1.1rem;">📍 Location Pin</strong>
+                        <hr style="margin:5px 0; border:0; border-top:1px solid #ddd;">
+                        <strong>Latitude:</strong> ${lat}<br>
+                        <strong>Longitude:</strong> ${lng}<br>
+                        <strong>Elevation:</strong> <span style="color:#FFA500;">Fetching... ⏳</span>
+                    </div>
+                `;
+                
+                layer.bindPopup(initialPopup);
+                drawnItems.addLayer(layer);
+                layer.openPopup();
+
+                // 2. Request topographic elevation data in the background
+                fetch(`https://api.open-elevation.com/api/v1/lookup?locations=${lat},${lng}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const elevation = data.results[0].elevation;
+                        
+                        // 3. Update the popup automatically when the data arrives
+                        layer.setPopupContent(`
+                            <div style="text-align:center; font-family:inherit; min-width: 160px;">
+                                <strong style="color:var(--primary-color); font-size:1.1rem;">📍 Location Pin</strong>
+                                <hr style="margin:5px 0; border:0; border-top:1px solid #ddd;">
+                                <strong>Latitude:</strong> ${lat}<br>
+                                <strong>Longitude:</strong> ${lng}<br>
+                                <strong>Elevation:</strong> ${elevation.toFixed(1)} meters
+                            </div>
+                        `);
+                    })
+                    .catch(error => {
+                        // Fallback just in case the elevation server is offline
+                        layer.setPopupContent(`
+                            <div style="text-align:center; font-family:inherit; min-width: 160px;">
+                                <strong style="color:var(--primary-color); font-size:1.1rem;">📍 Location Pin</strong>
+                                <hr style="margin:5px 0; border:0; border-top:1px solid #ddd;">
+                                <strong>Latitude:</strong> ${lat}<br>
+                                <strong>Longitude:</strong> ${lng}<br>
+                                <strong>Elevation:</strong> <span style="color:red;">Unavailable</span>
+                            </div>
+                        `);
+                        console.warn("Could not retrieve elevation data.", error);
+                    });
+            } else {
+                // For other drawn items (polygons, lines), just add them normally
+                drawnItems.addLayer(layer);
+            }
         });
     }
 
@@ -230,6 +286,41 @@ try {
         }
     });
     map.addControl(new L.Control.ResetView({ position: 'topleft' }));
+  
+// --- NEW: Custom Image GPS Location Button (With Close Button) ---
+    L.Control.GPSButton = L.Control.extend({
+        onAdd: map => {
+            // Create the main container
+            const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control gps-image-btn');
+            
+            // Create the main GPS image element
+            const img = L.DomUtil.create('img', '', container);
+            img.src = 'https://raw.githubusercontent.com/LIGTAS-AGAD/ligtas-agad-rilews-v-15-mobile-edition/refs/heads/main/ISLAW2.png'; 
+            img.title = "Assess My Current Location";
+            
+            // Create the tiny Close 'X' button
+            const closeBtn = L.DomUtil.create('div', 'gps-close-btn', container);
+            closeBtn.innerHTML = '×';
+            closeBtn.title = "Hide GPS Button";
+
+            // LOGIC 1: Trigger GPS when the main icon is clicked
+            img.onclick = (e) => {
+                L.DomEvent.stopPropagation(e);
+                showLoadingScreen("Acquiring GPS Signal..."); 
+                map.locate({setView: true, maxZoom: 16, timeout: 10000});
+            };
+
+            // LOGIC 2: Remove the entire container when the 'X' is clicked
+            closeBtn.onclick = (e) => {
+                L.DomEvent.stopPropagation(e); // Stops the click from bleeding through to the map
+                container.remove();            // Instantly deletes the button from the screen
+            };
+            
+            return container;
+        }
+    });
+    // Add the button to the map (topright so we can middle-center it via CSS)
+    map.addControl(new L.Control.GPSButton({ position: 'topright' }));
 
 } catch (e) { console.error("Map failed to initialize", e); showError("Map failed to load.", 'error'); }
 
@@ -318,7 +409,7 @@ function generateCombinedReport(layerName, properties, nearestStation, landslide
             <tr><th>Nearest Station</th><td>${nearestStation.StationName || nearestStation.Station}</td></tr>
             <tr><th>Distance</th><td>${nearestStation.distance} km</td></tr>
             <tr><th>Warning Level</th><td style="background-color:${color}; font-weight:bold;">Level ${wLevel}</td></tr>
-            <tr><th>Rainfall (24h)</th><td>${nearestStation.R24H || nearestStation.Rainfall || '0'} mm</td></tr>
+            <tr><th>Rainfall Accumulation(7-day)</th><td>${nearestStation.R24H || nearestStation.Rainfall || '0'} mm</td></tr>
             <tr><th>Latitude</th><td>${nearestStation.Latitude || 'N/A'}</td></tr>
             <tr><th>Longitude</th><td>${nearestStation.Longitude || 'N/A'}</td></tr>
             <tr><th>Elevation</th><td>${nearestStation.Elevation ? nearestStation.Elevation + ' m' : 'N/A'}</td></tr>
@@ -456,7 +547,7 @@ function syncAwsLayersWithData() {
                         <table class="popup-table">
                             <tr><th>Linked Station</th><td>${station.StationName || station.Station}</td></tr>
                             <tr><th>Warning Level</th><td style="background-color:${targetColor}; font-weight:bold; color: ${warningLevel === 1 ? 'black' : 'white'};">Level ${warningLevel || rawLevel}</td></tr>
-                            <tr><th>Rainfall (24H)</th><td>${station.Rainfall || station.R24H || 0} mm</td></tr>
+                            <tr><th>Rainfall Accumulation (7-day)</th><td>${station.Rainfall || station.R24H || 0} mm</td></tr>
                             <tr><th>Status</th><td>${station.Status || 'N/A'}</td></tr>
                         </table>
                         <div class="popup-credits">Report Generated by <strong>DOST Project LIGTAS-AGAD RIILEWS</strong> (SESAM-UPLB)</div>
@@ -499,28 +590,21 @@ initSynchronizedAWSLayer(
 );
 
 // --- 6. Controls Initialization ---
-
-const LegendControl = L.Control.extend({
-    options: { position: 'bottomright' },
-    onAdd: function(map) {
-        const container = L.DomUtil.create('div', 'legend');
-        const toggleBtn = L.DomUtil.create('button', 'legend-toggle', container);
-        toggleBtn.innerHTML = '▼ Legend';
-        
-        const content = L.DomUtil.create('div', 'legend-content', container);
-        layerData.forEach((data, index) => {
-            const logoSrc = layerLogos[index] || '';
-            const item = L.DomUtil.create('div', 'legend-item', content);
-            item.innerHTML = `<img src="${logoSrc}" class="legend-logo" alt="icon"><div class="legend-swatch" style="background-color: ${data.color};"></div><div class="legend-text"><strong>${data.name}</strong><br><span>${data.desc}</span></div>`;
-        });
-        L.DomEvent.on(toggleBtn, 'click', () => {
-            if (content.classList.contains('hidden')) { content.classList.remove('hidden'); toggleBtn.innerHTML = '▼ Legend'; } 
-            else { content.classList.add('hidden'); toggleBtn.innerHTML = '▶ Legend'; }
-        });
-        return container;
-    }
-});
-map.addControl(new LegendControl());
+// Build the Modal Legend Content
+const legendContainer = document.getElementById('legendModalContent');
+if (legendContainer) {
+    layerData.forEach((data, index) => {
+        const logoSrc = layerLogos[index] || '';
+        const item = document.createElement('div');
+        item.className = 'legend-item';
+        item.innerHTML = `
+            <img src="${logoSrc}" class="legend-logo" alt="icon">
+            <div class="legend-swatch" style="background-color: ${data.color};"></div>
+            <div class="legend-text"><strong>${data.name}</strong><br><span>${data.desc}</span></div>
+        `;
+        legendContainer.appendChild(item);
+    });
+}
 
 const searchControl = new L.Control.Search({ url: 'https://nominatim.openstreetmap.org/search?format=json&q={s}', jsonpParam: 'json_callback', propertyName: 'display_name', propertyLoc: ['lat', 'lon'], marker: L.circleMarker([0, 0], { radius: 30, color: 'red' }), autoCollapse: true, autoType: false, minLength: 2 });
 map.addControl(searchControl);
@@ -777,20 +861,28 @@ function initSidebarControls() {
 
 const controlsModal = document.getElementById('controlsModal');
 const propertiesModal = document.getElementById('propertiesModal');
+const legendModal = document.getElementById('legendModal'); // NEW
+
 const openControlsBtn = document.getElementById('openControlsBtn');
 const openPropertiesBtn = document.getElementById('openPropertiesBtn');
+const openLegendBtn = document.getElementById('openLegendBtn'); // NEW
+
 const closeControlsBtn = document.getElementById('closeControlsBtn');
 const closePropertiesBtn = document.getElementById('closePropertiesBtn');
+const closeLegendBtn = document.getElementById('closeLegendBtn'); // NEW
 
 if(openControlsBtn) openControlsBtn.onclick = () => { controlsModal.style.display = "flex"; };
 if(openPropertiesBtn) openPropertiesBtn.onclick = () => { propertiesModal.style.display = "flex"; };
+if(openLegendBtn) openLegendBtn.onclick = () => { legendModal.style.display = "flex"; }; // NEW
 
 if(closeControlsBtn) closeControlsBtn.onclick = () => { controlsModal.style.display = "none"; };
 if(closePropertiesBtn) closePropertiesBtn.onclick = () => { propertiesModal.style.display = "none"; };
+if(closeLegendBtn) closeLegendBtn.onclick = () => { legendModal.style.display = "none"; }; // NEW
 
 window.addEventListener('click', (e) => {
     if (e.target === controlsModal) controlsModal.style.display = "none";
     if (e.target === propertiesModal) propertiesModal.style.display = "none";
+    if (e.target === legendModal) legendModal.style.display = "none"; // NEW
 });
 
 const toggleBufferBtn = document.getElementById('toggle-buffer');
