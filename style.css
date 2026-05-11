@@ -407,8 +407,8 @@ body.disable-effects .flashing-high { animation: none !important; opacity: 0.8 !
 .gps-image-btn {
     position: relative; /* Essential for the close button to anchor to */
     background-color: transparent !important; 
-    width: 200px !important;  
-    height: 200px !important; 
+    width: 100px !important;  
+    height: 100px !important; 
     display: flex;
     justify-content: center;
     align-items: center;
@@ -417,8 +417,8 @@ body.disable-effects .flashing-high { animation: none !important; opacity: 0.8 !
 }
 
 .gps-image-btn img {
-    width: 180px;  
-    height: 180px;
+    width: 99px;  
+    height: 99px;
     object-fit: contain;
     cursor: pointer;
     transition: transform 0.2s;
